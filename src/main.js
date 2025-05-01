@@ -5,21 +5,11 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-let mixer; 
-const clock = new THREE.Clock();  // Add a clock to keep track of time
-
-
 /* ---------------------------------
    Canvas / sizes
 ----------------------------------*/
 const canvas = document.querySelector("#experience-canvas");
 const sizes  = { width: window.innerWidth, height: window.innerHeight };
-
-const raycasterObjects =[];
-
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-
 
 
 /* ---------------------------------
@@ -135,49 +125,17 @@ const render =() =>{
  console.log("000000000")
  console.log (controls.target);
 
+
+
 }
-
-
 
 
 function animate() {
-  const delta = clock.getDelta();  // Time since last frame
-  controls.update();
-
-  if (mixer) mixer.update(delta);  // Update animations
-
-  //Raycaster
-raycaster.setFromCamera( pointer, camera );
-
-const intersects = raycaster.intersectObjects( raycasterObjects);
-
-for (let i = 0; i < raycasterObjects.length; i++) {
-  const obj = raycasterObjects[i];
-  if (obj.material.emissive) {
-    obj.material.emissive.set(0x000000); // reset all
-  }
-}
-
-for (let i = 0; i < intersects.length; i++) {
-  const obj = intersects[i].object;
-  if (obj.material.emissive) {
-    obj.material.emissive.set(0xff0000); // highlight
-  }
-}
-
-
-if(intersects.length>0){
-  document.body.style.cursor = "pointer";
-}else{
-  document.body.style.cursor = "default";
-}
-  
-  
-  
+   
+   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
-
 
 
 
@@ -205,11 +163,6 @@ videoTexture.colorSpace = THREE.SRGBColorSpace;
 videoTexture.wrapS = THREE.RepeatWrapping;
 videoTexture.repeat.x = -1;
 
-window.addEventListener("mousemove", (e)=>{
-  pointer.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-	pointer.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-})
-
 // Ensure the video plays after a click event
 window.addEventListener("click", () => {
   // Only play if not already playing
@@ -222,21 +175,9 @@ window.addEventListener("click", () => {
 
 // Your existing GLTF loading logic
 gltfLoader.load(
-  "/models/Room_Animate.glb",
+  "/models/Room_Portfolio.glb",
   (gltf) => {
     scene.add(gltf.scene);
-
-    // Set up animation mixer
-    mixer = new THREE.AnimationMixer(gltf.scene);
-
-    // Play all available animations
-   // Play all available animations at half speed
-gltf.animations.forEach((clip) => {
-  const action = mixer.clipAction(clip);
-  action.timeScale = 0.2; // 👈 0.1 = half speed
-  action.play();
-});
-
 
     // DEBUG: See names and types
     gltf.scene.traverse((child) => {
@@ -248,76 +189,32 @@ gltf.animations.forEach((clip) => {
     if (targetMesh && targetMesh.isMesh) {
       const videoMaterial = new THREE.MeshBasicMaterial({
         map: videoTexture,
-        toneMapped: false,
+        toneMapped: false, // VERY important: video should NOT be tone mapped
       });
     
       targetMesh.material = videoMaterial;
-
-      const instaRay = gltf.scene.getObjectByName("Insta_Raycaster");
-      const fbRay = gltf.scene.getObjectByName("Fb_Raycaster");
-      const folderRay = gltf.scene.getObjectByName("Folder_Raycaster");
-      const mouseRay = gltf.scene.getObjectByName("Mouse_Raycaster");
-      
-
-if (instaRay && instaRay.isMesh) {
-  raycasterObjects.push(instaRay);
-  console.log("✅ Insta_Raycaster added to raycasterObjects");
-} else {
-  console.warn("⚠️ Insta_Raycaster not found or not a mesh.");
-}
-
-if (fbRay && fbRay.isMesh) {
-  raycasterObjects.push(fbRay);
-  console.log("✅ Fb_Raycaster added to raycasterObjects");
-} else {
-  console.warn("⚠️ Fb_Raycaster not found or not a mesh.");
-}
-
-if (folderRay && folderRay.isMesh) {
-  raycasterObjects.push(folderRay);
-  console.log("✅ Folder_Raycaster added to raycasterObjects");
-} else {
-  console.warn("⚠️ Folder_Raycaster not found or not a mesh.");
-}
-
-
-if (mouseRay && mouseRay.isMesh) {
-  raycasterObjects.push(mouseRay);
-  console.log("✅ Mouse_Raycaster added to raycasterObjects");
-} else if (mouseRay && mouseRay.material) {
-  if (!(mouseRay.material instanceof THREE.MeshStandardMaterial)) {
-    mouseRay.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, emissive: 0x000000 });
-    console.warn("⚠️ Mouse_Raycaster material replaced with MeshStandardMaterial for raycasting.");
-  }
-} else {
-  console.warn("⚠️ Mouse_Raycaster not found or not a mesh.");
-}
-
-
-
-
     
-      // ✅ Add targetMesh to raycaster targets
-      raycasterObjects.push(targetMesh);
+      console.log("✅ Video texture successfully applied to Imac_Screen (with MeshBasicMaterial)!");
     
-      console.log("✅ Video texture successfully applied to Imac_Screen!");
-    
-
+      // 🛠️ NEW: Adjust targetMesh scale to fit video aspect ratio
       videoElement.addEventListener('loadedmetadata', () => {
         const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
         const meshAspect = targetMesh.scale.x / targetMesh.scale.y;
-
+    
         if (videoAspect > meshAspect) {
           targetMesh.scale.y = targetMesh.scale.x / videoAspect;
         } else {
           targetMesh.scale.x = targetMesh.scale.y * videoAspect;
         }
       });
+    
     } else {
       console.warn("⚠️ Target mesh not found or not a mesh.");
     }
+    
 
-    animate(); // Start the animation loop
+    // Start animation after the model is loaded
+    animate();  // Call the animate function here
   },
   (xhr) => {
     console.log(`GLB ${((xhr.loaded / xhr.total) * 100).toFixed(1)}% loaded`);
@@ -326,7 +223,7 @@ if (mouseRay && mouseRay.isMesh) {
 );
 
 
-//
+
 
 
 const rgbeLoader = new RGBELoader();
@@ -336,3 +233,4 @@ rgbeLoader.load("/hdr/studio_small_03_2k.hdr", (texture) => {
   scene.environment = texture;         // for reflections, PBR materials
  
 });
+
