@@ -256,7 +256,7 @@ gltf.animations.forEach((clip) => {
       const instaRay = gltf.scene.getObjectByName("Insta_Raycaster");
       const fbRay = gltf.scene.getObjectByName("Fb_Raycaster");
       const folderRay = gltf.scene.getObjectByName("Folder_Raycaster");
-      const mouseRay = gltf.scene.getObjectByName("Mouse_Raycaster");
+      const ImacRay = gltf.scene.getObjectByName("Imac_Raycaster");
       
 
 if (instaRay && instaRay.isMesh) {
@@ -281,16 +281,16 @@ if (folderRay && folderRay.isMesh) {
 }
 
 
-if (mouseRay && mouseRay.isMesh) {
-  raycasterObjects.push(mouseRay);
-  console.log("✅ Mouse_Raycaster added to raycasterObjects");
-} else if (mouseRay && mouseRay.material) {
-  if (!(mouseRay.material instanceof THREE.MeshStandardMaterial)) {
-    mouseRay.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, emissive: 0x000000 });
-    console.warn("⚠️ Mouse_Raycaster material replaced with MeshStandardMaterial for raycasting.");
+if (ImacRay && ImacRay.isMesh) {
+  raycasterObjects.push(ImacRay);
+  console.log("✅ Imac_Raycaster added to raycasterObjects");
+} else if (ImacRay && ImacRay.material) {
+  if (!(ImacRay.material instanceof THREE.MeshStandardMaterial)) {
+    ImacRay.material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, emissive: 0x000000 });
+    console.warn("⚠️ Imac_Raycaster material replaced with MeshStandardMaterial for raycasting.");
   }
 } else {
-  console.warn("⚠️ Mouse_Raycaster not found or not a mesh.");
+  console.warn("⚠️ Imac_Raycaster not found or not a mesh.");
 }
 
 
@@ -336,4 +336,3 @@ rgbeLoader.load("/hdr/studio_small_03_2k.hdr", (texture) => {
   scene.environment = texture;         // for reflections, PBR materials
  
 });
-
