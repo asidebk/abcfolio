@@ -222,7 +222,7 @@ window.addEventListener("click", () => {
 
 // Your existing GLTF loading logic
 gltfLoader.load(
-  "/models/Room_Animate.glb",
+  "/models/Room_Animate_New.glb",
   (gltf) => {
     scene.add(gltf.scene);
 
