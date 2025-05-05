@@ -257,6 +257,7 @@ gltf.animations.forEach((clip) => {
       const fbRay = gltf.scene.getObjectByName("Fb_Raycaster");
       const folderRay = gltf.scene.getObjectByName("Folder_Raycaster");
       const ImacRay = gltf.scene.getObjectByName("Imac_Raycaster");
+      const mouseRay = gltf.scene.getObjectByName("Mouse_Raycaster");
       
 
 if (instaRay && instaRay.isMesh) {
@@ -294,7 +295,12 @@ if (ImacRay && ImacRay.isMesh) {
 }
 
 
-
+if (mouseRay && mouseRay.isMesh) {
+  raycasterObjects.push(mouseRay);
+  console.log("✅ Mouse_Raycaster added to raycasterObjects");
+} else {
+  console.warn("⚠️ Mouse_Raycaster not found or not a mesh.");
+}
 
     
       // ✅ Add targetMesh to raycaster targets
