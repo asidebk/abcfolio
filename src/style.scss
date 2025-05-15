@@ -1,20 +1,19 @@
-*{
+* {
   margin: 0;
   padding: 0;
-  box-sizing: border-box ;
+  box-sizing: border-box;
 }
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
- 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased; 
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-// Experience 
 
-  #experience{
+// Experience 
+#experience {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -25,5 +24,24 @@
   #experience-canvas {
     height: 100%;
     width: 100%;
+    display: block; // ensures no browser-added inline gaps
+    z-index: 0; // ensure this doesn't sit above modal
+    position: absolute;
   }
+}
+
+// Modals
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: white; // set this so it's visible on dark backgrounds
+  z-index: 10; // must be higher than canvas
+  pointer-events: auto; // allow interaction if needed
+  background: rgba(0, 0, 0, 0.5); // optional: adds contrast
+  padding: 1rem;
+  border-radius: 8px;
+  display: none;
 }
