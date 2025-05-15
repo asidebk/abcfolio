@@ -47,17 +47,6 @@ gsap.to(modal, {
 });
 };
 
-// Allow clicking on modal background to close it
-document.querySelectorAll(".modal").forEach((modal) => {
-  modal.addEventListener("click", (e) => {
-    if (e.target.classList.contains("modal")) {
-      hideModal(modal);
-    }
-  });
-});
-
-
-
 const socialLinks = {
   "Fb_Raycaster": "https://www.facebook.com/adrian.castillo2",
   "Insta_Raycaster": "https://www.instagram.com/a.sidebk?igsh=NGZud3ZvMGd1djRl&utm_source=qr"
@@ -191,42 +180,42 @@ const render =() =>{
 
 
 function animate() {
-  const delta = clock.getDelta();
+  const delta = clock.getDelta();  // Time since last frame
   controls.update();
 
-  if (mixer) mixer.update(delta);
+  if (mixer) mixer.update(delta);  // Update animations
 
-  raycaster.setFromCamera(pointer, camera);
-  const intersects = raycaster.intersectObjects(raycasterObjects);
+  //Raycaster
+raycaster.setFromCamera( pointer, camera );
 
-  // Reset all highlights
-  for (let i = 0; i < raycasterObjects.length; i++) {
-    const obj = raycasterObjects[i];
-    if (obj.material.emissive) {
-      obj.material.emissive.set(0x000000);
-    }
+const intersects = raycaster.intersectObjects( raycasterObjects);
+
+for (let i = 0; i < raycasterObjects.length; i++) {
+  const obj = raycasterObjects[i];
+  if (obj.material.emissive) {
+    obj.material.emissive.set(0x000000); // reset all
   }
+}
 
-  // Highlight full group if intersected
-  if (intersects.length > 0) {
-    const hit = intersects[0].object;
-    const parent = hit.userData.parentGroup || hit;
-
-    parent.traverse((child) => {
-      if (child.isMesh && child.material.emissive) {
-        child.material.emissive.set(0xff0000);
-      }
-    });
-
-    document.body.style.cursor = "pointer";
-  } else {
-    document.body.style.cursor = "default";
+for (let i = 0; i < intersects.length; i++) {
+  const obj = intersects[i].object;
+  if (obj.material.emissive) {
+    obj.material.emissive.set(0xff0000); // highlight
   }
+}
 
+
+if(intersects.length>0){
+  document.body.style.cursor = "pointer";
+}else{
+  document.body.style.cursor = "default";
+}
+  
+  
+  
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
-
 
 
 
@@ -306,35 +295,23 @@ window.addEventListener("click", () => {
   }
 });
 
-function prepareRaycasterMesh(object, name) {
-  if (!object) {
-    console.warn(`⚠️ ${name} not found.`);
-    return;
-  }
-
-  object.traverse((child) => {
-    if (child.isMesh) {
-      if (!child.material.emissive) {
-        child.material = new THREE.MeshStandardMaterial({
-          color: child.material.color || new THREE.Color(0xffffff),
-          emissive: new THREE.Color(0x000000),
-          metalness: 0.2,
-          roughness: 0.5,
-        });
-        console.warn(`⚠️ ${child.name} material replaced for raycasting highlight.`);
-      }
-
-      // Store reference to parent for easy access during highlighting
-      child.userData.parentGroup = object;
-
-      raycasterObjects.push(child);
+function prepareRaycasterMesh(mesh, name) {
+  if (mesh && mesh.isMesh) {
+    if (!mesh.material.emissive) {
+      mesh.material = new THREE.MeshStandardMaterial({
+        color: mesh.material.color || new THREE.Color(0xffffff),
+        emissive: new THREE.Color(0x000000),
+        metalness: 0.2,
+        roughness: 0.5,
+      });
+      console.warn(`⚠️ ${name} material replaced with MeshStandardMaterial for raycasting highlight.`);
     }
-  });
-
-  console.log(`✅ All meshes under ${name} added to raycasterObjects`);
+    raycasterObjects.push(mesh);
+    console.log(`✅ ${name} added to raycasterObjects`);
+  } else {
+    console.warn(`⚠️ ${name} not found or not a mesh.`);
+  }
 }
-
-
 
 
 // Your existing GLTF loading logic
@@ -429,3 +406,4 @@ rgbeLoader.load("/hdr/studio_small_03_2k.hdr", (texture) => {
   scene.environment = texture;         // for reflections, PBR materials
  
 });
+
