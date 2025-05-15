@@ -25,6 +25,13 @@ const modals ={
   folder: document.querySelector(".modal.folder"),
 };    
 
+document.querySelectorAll(".modal-exit-button").forEach(button=>{
+button.addEventListener("click",(e)=>{
+  const modal = e.target.closest(".modal");
+  hideModal(modal);
+  });
+})
+
 const showModal =(modal) => {
 modal.style.display = "block"
 gsap.set(modal, {opacity: 0});
