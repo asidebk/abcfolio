@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
-import gsap from "gsap";
+
 
 
 
@@ -17,46 +17,6 @@ const clock = new THREE.Clock();  // Add a clock to keep track of time
 ----------------------------------*/
 const canvas = document.querySelector("#experience-canvas");
 const sizes  = { width: window.innerWidth, height: window.innerHeight };
-
-const modals ={
-  work: document.querySelector(".modal.work"),
-  about: document.querySelector(".modal.about"),
-  contact: document.querySelector(".modal.contact"),
-  folder: document.querySelector(".modal.folder"),
-};    
-
-const showModal =(modal) => {
-modal.style.display = "block"
-gsap.set(modal, {opacity: 0});
-
-gsap.to(modal, {
-  opacity: 1,
-  duration: 0.5,
-});
-};
-
-const hideModal =(modal) => {
-
-gsap.to(modal, {
-  opacity: 0,
-  duration: 0.5,
-  onComplete: () => {
-
-    modal.style.display = "none";
-  },
-});
-};
-
-// Allow clicking on modal background to close it
-document.querySelectorAll(".modal").forEach((modal) => {
-  modal.addEventListener("click", (e) => {
-    if (e.target.classList.contains("modal")) {
-      hideModal(modal);
-    }
-  });
-});
-
-
 
 const socialLinks = {
   "Fb_Raycaster": "https://www.facebook.com/adrian.castillo2",
@@ -191,42 +151,42 @@ const render =() =>{
 
 
 function animate() {
-  const delta = clock.getDelta();
+  const delta = clock.getDelta();  // Time since last frame
   controls.update();
 
-  if (mixer) mixer.update(delta);
+  if (mixer) mixer.update(delta);  // Update animations
 
-  raycaster.setFromCamera(pointer, camera);
-  const intersects = raycaster.intersectObjects(raycasterObjects);
+  //Raycaster
+raycaster.setFromCamera( pointer, camera );
 
-  // Reset all highlights
-  for (let i = 0; i < raycasterObjects.length; i++) {
-    const obj = raycasterObjects[i];
-    if (obj.material.emissive) {
-      obj.material.emissive.set(0x000000);
-    }
+const intersects = raycaster.intersectObjects( raycasterObjects);
+
+for (let i = 0; i < raycasterObjects.length; i++) {
+  const obj = raycasterObjects[i];
+  if (obj.material.emissive) {
+    obj.material.emissive.set(0x000000); // reset all
   }
+}
 
-  // Highlight full group if intersected
-  if (intersects.length > 0) {
-    const hit = intersects[0].object;
-    const parent = hit.userData.parentGroup || hit;
-
-    parent.traverse((child) => {
-      if (child.isMesh && child.material.emissive) {
-        child.material.emissive.set(0xff0000);
-      }
-    });
-
-    document.body.style.cursor = "pointer";
-  } else {
-    document.body.style.cursor = "default";
+for (let i = 0; i < intersects.length; i++) {
+  const obj = intersects[i].object;
+  if (obj.material.emissive) {
+    obj.material.emissive.set(0xff0000); // highlight
   }
+}
 
+
+if(intersects.length>0){
+  document.body.style.cursor = "pointer";
+}else{
+  document.body.style.cursor = "default";
+}
+  
+  
+  
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
-
 
 
 
@@ -264,35 +224,12 @@ window.addEventListener("click", () => {
   const intersects = raycaster.intersectObjects(raycasterObjects);
   if (intersects.length > 0) {
     const object = intersects[0].object;
-    const objectName = object.name;
-
-    // Handle social links
-    if (socialLinks[objectName]) {
-      window.open(socialLinks[objectName], "_blank", "noopener,noreferrer");
-      return;
-    }
-
-    // Handle modals
-    switch (objectName) {
-      case "Work_Raycaster":
-        showModal(modals.work);
-        break;
-      case "About_Raycaster":
-        showModal(modals.about);
-        break;
-      case "Contact_Raycaster":
-        showModal(modals.contact);
-        break;
-      case "Folder_Raycaster":
-        showModal(modals.folder);
-        break;
-      default:
-        // Optional: fallback
-        break;
+    const url = socialLinks[object.name];
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
     }
   }
 });
-
 
 
 
@@ -306,35 +243,23 @@ window.addEventListener("click", () => {
   }
 });
 
-function prepareRaycasterMesh(object, name) {
-  if (!object) {
-    console.warn(`⚠️ ${name} not found.`);
-    return;
-  }
-
-  object.traverse((child) => {
-    if (child.isMesh) {
-      if (!child.material.emissive) {
-        child.material = new THREE.MeshStandardMaterial({
-          color: child.material.color || new THREE.Color(0xffffff),
-          emissive: new THREE.Color(0x000000),
-          metalness: 0.2,
-          roughness: 0.5,
-        });
-        console.warn(`⚠️ ${child.name} material replaced for raycasting highlight.`);
-      }
-
-      // Store reference to parent for easy access during highlighting
-      child.userData.parentGroup = object;
-
-      raycasterObjects.push(child);
+function prepareRaycasterMesh(mesh, name) {
+  if (mesh && mesh.isMesh) {
+    if (!mesh.material.emissive) {
+      mesh.material = new THREE.MeshStandardMaterial({
+        color: mesh.material.color || new THREE.Color(0xffffff),
+        emissive: new THREE.Color(0x000000),
+        metalness: 0.2,
+        roughness: 0.5,
+      });
+      console.warn(`⚠️ ${name} material replaced with MeshStandardMaterial for raycasting highlight.`);
     }
-  });
-
-  console.log(`✅ All meshes under ${name} added to raycasterObjects`);
+    raycasterObjects.push(mesh);
+    console.log(`✅ ${name} added to raycasterObjects`);
+  } else {
+    console.warn(`⚠️ ${name} not found or not a mesh.`);
+  }
 }
-
-
 
 
 // Your existing GLTF loading logic
