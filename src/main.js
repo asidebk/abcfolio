@@ -3,324 +3,159 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import gsap from "gsap";
 
-
-
-let mixer; 
-const clock = new THREE.Clock();  // Add a clock to keep track of time
-
-
 /* ---------------------------------
-   Canvas / sizes
+   Setup: Canvas, Sizes, Clock
 ----------------------------------*/
 const canvas = document.querySelector("#experience-canvas");
-const sizes  = { width: window.innerWidth, height: window.innerHeight };
+const sizes = { width: window.innerWidth, height: window.innerHeight };
+const clock = new THREE.Clock();
+let mixer;
 
-const modals ={
-  work: document.querySelector(".modal.work"),
-  about: document.querySelector(".modal.about"),
-  contact: document.querySelector(".modal.contact"),
-  folder: document.querySelector(".modal.folder"),
-};    
-
-document.querySelectorAll(".modal-exit-button").forEach(button=>{
-button.addEventListener("click",(e)=>{
-  const modal = e.target.closest(".modal");
-  hideModal(modal);
-  });
-})
-
-const showModal =(modal) => {
-modal.style.display = "block"
-gsap.set(modal, {opacity: 0});
-
-gsap.to(modal, {
-  opacity: 1,
-  duration: 0.5,
-});
-};
-
-const hideModal =(modal) => {
-
-gsap.to(modal, {
-  opacity: 0,
-  duration: 0.5,
-  onComplete: () => {
-
-    modal.style.display = "none";
-  },
-});
-};
-
-// Allow clicking on modal background to close it
-document.querySelectorAll(".modal").forEach((modal) => {
-  modal.addEventListener("click", (e) => {
-    if (e.target.classList.contains("modal")) {
-      hideModal(modal);
-    }
-  });
-});
-
-
-
-const socialLinks = {
-  "Fb_Raycaster": "https://www.facebook.com/adrian.castillo2",
-  "Insta_Raycaster": "https://www.instagram.com/a.sidebk?igsh=NGZud3ZvMGd1djRl&utm_source=qr"
-};
-
-
-
-const raycasterObjects =[];
-
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-
-
-
-/* ---------------------------------
-   Scene, Camera, Renderer
-----------------------------------*/
-const scene  = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(
-  45,
-  sizes.width / sizes.height,
-  0.1,
-  1000
-);
-camera.position.set(-7, 5, 8);         
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 1000);
+camera.position.set(-7, 5, 8);
 scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.outputEncoding = THREE.sRGBEncoding;  // correct gamma
+renderer.outputEncoding = THREE.sRGBEncoding;
 
 /* ---------------------------------
-   Lights — at least one!
+   Controls
 ----------------------------------*/
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0.0445, 1.992, 0.269);
 
+/* ---------------------------------
+   Lights
+----------------------------------*/
+const lights = [
+  new THREE.DirectionalLight(0xffffff, 0.1).position.set(5, 10, 10),
+  new THREE.DirectionalLight(0xffffff, 0.1).position.set(-10, 5, 5),
+  new THREE.DirectionalLight(0x88aaff, 0.1).position.set(0, 10, -10),
+  new THREE.AmbientLight(0xffffff, 0.1)
+];
+lights.forEach(light => scene.add(light));
 
-const keyLight = new THREE.DirectionalLight(0xffffff, 0.1);
-keyLight.position.set(5, 10, 10);
-keyLight.castShadow = true;
-scene.add(keyLight);
-
-
-// Fill Light - soft white
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.1);
-fillLight.position.set(-10, 5, 5);
-scene.add(fillLight);
-
-
-
-// Rim Light - blueish tint for style
-const rimLight = new THREE.DirectionalLight(0x88aaff, 0.1);
-rimLight.position.set(0, 10, -10);
-scene.add(rimLight);
-
-// Soft ambient light for general illumination
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-scene.add(ambientLight);
-
-
+/* ---------------------------------
+   Clouds
+----------------------------------*/
 const cloudTexture = new THREE.TextureLoader().load("/textures/cloud.png");
-
 function createCloud(x, y, z, scale = 1) {
-  const cloudMaterial = new THREE.SpriteMaterial({ map: cloudTexture, transparent: true, opacity: 0.6 });
-  const cloud = new THREE.Sprite(cloudMaterial);
+  const material = new THREE.SpriteMaterial({ map: cloudTexture, transparent: true, opacity: 0.6 });
+  const cloud = new THREE.Sprite(material);
   cloud.position.set(x, y, z);
   cloud.scale.set(scale, scale, 10);
   return cloud;
 }
-
-// Create cloud sprites and store references
-const cloud1 = createCloud(0, 7, -2, 4);  // Raise cloud1 higher to y = 10
-const cloud2 = createCloud(1, 7, -1, 4); // Raise cloud2 higher to y = 12
-const cloud3 = createCloud(2, 7, 1, 4); // Raise cloud3 higher to y = 11
-
-scene.add(cloud1);
-scene.add(cloud2);
-scene.add(cloud3);
-
-
-
+scene.add(createCloud(0, 7, -2, 4), createCloud(1, 7, -1, 4), createCloud(2, 7, 1, 4));
 
 /* ---------------------------------
-   OrbitControls
+   Raycasting
 ----------------------------------*/
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.update();
-controls.target.set(0.04451427016691359,1.992258015338971,0.26919808674082935)
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const raycasterObjects = [];
+let scaledHoverObjects = new Set();
 
+window.addEventListener("mousemove", (e) => {
+  pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+/* ---------------------------------
+   Resize Handling
+----------------------------------*/
+window.addEventListener("resize", () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(sizes.width, sizes.height);
+});
+
+/* ---------------------------------
+   Modals
+----------------------------------*/
+const modals = {
+  work: document.querySelector(".modal.work"),
+  about: document.querySelector(".modal.about"),
+  contact: document.querySelector(".modal.contact"),
+  folder: document.querySelector(".modal.folder"),
+};
+const showModal = (modal) => {
+  modal.style.display = "block";
+  gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+};
+const hideModal = (modal) => {
+  gsap.to(modal, {
+    opacity: 0,
+    duration: 0.5,
+    onComplete: () => (modal.style.display = "none"),
+  });
+};
+document.querySelectorAll(".modal-exit-button").forEach(btn =>
+  btn.addEventListener("click", e => hideModal(e.target.closest(".modal")))
+);
+document.querySelectorAll(".modal").forEach(modal =>
+  modal.addEventListener("click", e => {
+    if (e.target.classList.contains("modal")) hideModal(modal);
+  })
+);
+
+/* ---------------------------------
+   Social Links
+----------------------------------*/
+const socialLinks = {
+  "Fb_Raycaster": "https://www.facebook.com/adrian.castillo2",
+  "Fb_Raycaster_Hover": "https://www.facebook.com/adrian.castillo2",
+  "Insta_Raycaster": "https://www.instagram.com/a.sidebk",
+  "Insta_Raycaster_Hover": "https://www.instagram.com/a.sidebk"
+};
+
+/* ---------------------------------
+   Video Texture
+----------------------------------*/
+const videoElement = document.createElement("video");
+videoElement.src = "/textures/room/video/Bb.mp4";
+videoElement.loop = true;
+videoElement.muted = true;
+videoElement.playsInline = true;
+videoElement.autoplay = true;
+videoElement.play();
+const videoTexture = new THREE.VideoTexture(videoElement);
+videoTexture.colorSpace = THREE.SRGBColorSpace;
+videoTexture.wrapS = THREE.RepeatWrapping;
+videoTexture.repeat.x = -1;
 
 /* ---------------------------------
    Loaders
 ----------------------------------*/
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
-
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-
-
-
 /* ---------------------------------
-   Handle window resize
+   GLTF Load
 ----------------------------------*/
-window.addEventListener("resize", () => {
-  sizes.width  = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
-
-const render =() =>{
- controls.update();
- 
-
- console.log (camera.position);
- console.log("000000000")
- console.log (controls.target);
-
-}
-
-
-
-
-function animate() {
-  const delta = clock.getDelta();
-  controls.update();
-
-  if (mixer) mixer.update(delta);
-
-  raycaster.setFromCamera(pointer, camera);
-  const intersects = raycaster.intersectObjects(raycasterObjects);
-
-  // Reset all highlights
-  for (let i = 0; i < raycasterObjects.length; i++) {
-    const obj = raycasterObjects[i];
-    if (obj.material.emissive) {
-      obj.material.emissive.set(0x000000);
-    }
-  }
-
-  // Highlight full group if intersected
-  if (intersects.length > 0) {
-    const hit = intersects[0].object;
-    const parent = hit.userData.parentGroup || hit;
-
-    parent.traverse((child) => {
-      if (child.isMesh && child.material.emissive) {
-        child.material.emissive.set(0xff0000);
-      }
-    });
-
-    document.body.style.cursor = "pointer";
-  } else {
-    document.body.style.cursor = "default";
-  }
-
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-}
-
-
-
-
-
-
-/* ---------------------------------
-   Load the GLB model
-----------------------------------*/
-// Remove muted: true to allow audio when the video is played
-const videoElement = document.createElement("video");
-videoElement.src = "/textures/room/video/Bb.mp4";
-videoElement.loop = true;
-videoElement.muted = true;
-videoElement.playsInline = true; // Good — already included
-videoElement.autoplay = true;  // Remove muted: true if you want sound
-videoElement.play()
-  .then(() => {
-    console.log("Video started playing.");
-  })
-  .catch((err) => {
-    console.error("Video play error:", err);
-  });
-
-const videoTexture = new THREE.VideoTexture(videoElement);
-videoTexture.colorSpace = THREE.SRGBColorSpace;
-videoTexture.wrapS = THREE.RepeatWrapping;
-videoTexture.repeat.x = -1;
-
-window.addEventListener("mousemove", (e)=>{
-  pointer.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-  pointer.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-});
-
-window.addEventListener("click", () => {
-  const intersects = raycaster.intersectObjects(raycasterObjects);
-  if (intersects.length > 0) {
-    const object = intersects[0].object;
-    const objectName = object.name;
-
-    // Handle social links
-    if (socialLinks[objectName]) {
-      window.open(socialLinks[objectName], "_blank", "noopener,noreferrer");
-      return;
-    }
-
-    // Handle modals
-    switch (objectName) {
-      case "Work_Raycaster":
-        showModal(modals.work);
-        break;
-      case "About_Raycaster":
-        showModal(modals.about);
-        break;
-      case "Contact_Raycaster":
-        showModal(modals.contact);
-        break;
-      case "Folder_Raycaster":
-        showModal(modals.folder);
-        break;
-      default:
-        // Optional: fallback
-        break;
-    }
-  }
-});
-
-
-
-
-// Ensure the video plays after a click event
-window.addEventListener("click", () => {
-  // Only play if not already playing
-  if (videoElement.paused) {
-    videoElement.play().catch((err) => {
-      console.error("Video play blocked:", err);
-    });
-  }
-});
-
 function prepareRaycasterMesh(object, name) {
-  if (!object) {
-    console.warn(`⚠️ ${name} not found.`);
-    return;
-  }
-
-  object.traverse((child) => {
+  if (!object) return console.warn(`⚠️ ${name} not found.`);
+  object.traverse(child => {
     if (child.isMesh) {
+     
+
+      // Add hover-specific data and materials
+      if (child.name.endsWith("_Hover")) {
+        child.userData.initialScale = child.scale.clone();
+        child.userData.initialPosition = child.position.clone();
+      }
+
       if (!child.material.emissive) {
         child.material = new THREE.MeshStandardMaterial({
           color: child.material.color || new THREE.Color(0xffffff),
@@ -328,111 +163,168 @@ function prepareRaycasterMesh(object, name) {
           metalness: 0.2,
           roughness: 0.5,
         });
-        console.warn(`⚠️ ${child.name} material replaced for raycasting highlight.`);
       }
-
-      // Store reference to parent for easy access during highlighting
       child.userData.parentGroup = object;
-
       raycasterObjects.push(child);
     }
   });
-
-  console.log(`✅ All meshes under ${name} added to raycasterObjects`);
 }
 
-
-
-
-// Your existing GLTF loading logic
 gltfLoader.load(
   "/models/Room_Animate_New.glb",
   (gltf) => {
     scene.add(gltf.scene);
-
-    // Set up animation mixer
     mixer = new THREE.AnimationMixer(gltf.scene);
-
-    // Play all available animations
-   // Play all available animations at half speed
-gltf.animations.forEach((clip) => {
-  const action = mixer.clipAction(clip);
-  action.timeScale = 0.2; // 👈 0.1 = half speed
-  action.play();
-});
-
-
-    // DEBUG: See names and types
-    gltf.scene.traverse((child) => {
-      console.log(child.name, child.type);
+    gltf.animations.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      action.timeScale = 0.2;
+      action.play();
     });
 
+gltf.scene.traverse((child) => {
+  if (child.name.endsWith("_Hover")) {
+    
+    
+    child.userData.initialScale = child.scale.clone();
+    child.userData.initialPosition = child.position.clone();
+    child.userData.initialRotation = child.rotation.clone();
+    child.userData.isAnimating = false;
+  }
+});
+
     const targetMesh = gltf.scene.getObjectByName("Imac_Screen");
-
-    if (targetMesh && targetMesh.isMesh) {
-      const videoMaterial = new THREE.MeshBasicMaterial({
-        map: videoTexture,
-        toneMapped: false,
-      });
-    
-      targetMesh.material = videoMaterial;
-
-      const instaRay = gltf.scene.getObjectByName("Insta_Raycaster");
-      const fbRay = gltf.scene.getObjectByName("Fb_Raycaster");
-      const folderRay = gltf.scene.getObjectByName("Folder_Raycaster");
-      const ImacRay = gltf.scene.getObjectByName("Imac_Raycaster");
-      const mouseRay = gltf.scene.getObjectByName("Mouse_Raycaster");
-      const WorkRay = gltf.scene.getObjectByName("Work_Raycaster");
-      const AboutRay = gltf.scene.getObjectByName("About_Raycaster");
-      const ContactRay = gltf.scene.getObjectByName("Contact_Raycaster");
-
-      prepareRaycasterMesh(instaRay, "Insta_Raycaster");
-      prepareRaycasterMesh(fbRay, "Fb_Raycaster");
-      prepareRaycasterMesh(folderRay, "Folder_Raycaster");
-      prepareRaycasterMesh(ImacRay, "Imac_Raycaster");
-      prepareRaycasterMesh(mouseRay, "Mouse_Raycaster");
-      prepareRaycasterMesh(WorkRay, "Work_Raycaster");
-      prepareRaycasterMesh(AboutRay, "About_Raycaster");
-      prepareRaycasterMesh(ContactRay, "Contact_Raycaster");
-      
- 
-
-// ✅ Add targetMesh to raycaster targets
-      raycasterObjects.push(targetMesh);
-    
-      console.log("✅ Video texture successfully applied to Imac_Screen!");
-    
-
-      videoElement.addEventListener('loadedmetadata', () => {
+    if (targetMesh?.isMesh) {
+      targetMesh.material = new THREE.MeshBasicMaterial({ map: videoTexture, toneMapped: false });
+      videoElement.addEventListener("loadedmetadata", () => {
         const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
         const meshAspect = targetMesh.scale.x / targetMesh.scale.y;
-
         if (videoAspect > meshAspect) {
           targetMesh.scale.y = targetMesh.scale.x / videoAspect;
         } else {
           targetMesh.scale.x = targetMesh.scale.y * videoAspect;
         }
       });
-    } else {
-      console.warn("⚠️ Target mesh not found or not a mesh.");
     }
 
-    animate(); // Start the animation loop
+    const targets = [
+      "Insta_Raycaster", "Fb_Raycaster", "Folder_Raycaster", "Imac_Raycaster", "Mouse_Raycaster",
+      "Work_Raycaster", "About_Raycaster", "Contact_Raycaster",
+      "Work_Raycaster_Hover", "About_Raycaster_Hover", "Contact_Raycaster_Hover",
+      "Folder_Raycaster_Hover", "Fb_Raycaster_Hover", "Insta_Raycaster_Hover"
+    ];
+    targets.forEach(name => prepareRaycasterMesh(gltf.scene.getObjectByName(name), name));
+
+    animate();
   },
-  (xhr) => {
-    console.log(`GLB ${((xhr.loaded / xhr.total) * 100).toFixed(1)}% loaded`);
-  },
-  (error) => console.error("GLB load error:", error)
+  xhr => console.log(`GLB ${(xhr.loaded / xhr.total * 100).toFixed(1)}% loaded`),
+  err => console.error("GLB load error:", err)
 );
 
-
-//
-
-
-const rgbeLoader = new RGBELoader();
-rgbeLoader.load("/hdr/studio_small_03_2k.hdr", (texture) => {
+/* ---------------------------------
+   Environment
+----------------------------------*/
+new RGBELoader().load("/hdr/studio_small_03_2k.hdr", (texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
+});
+const MAX_HOVER_SCALE = 3; // 150% of original size max
 
-  scene.environment = texture;         // for reflections, PBR materials
- 
+
+/* ---------------------------------
+   Animate Loop
+----------------------------------*/
+function animate() {
+  const delta = clock.getDelta();
+  controls.update();
+  if (mixer) mixer.update(delta);
+
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(raycasterObjects);
+  let currentHovered = new Set();
+
+  if (intersects.length > 0) {
+    const hit = intersects[0].object;
+    const parent = hit.userData.parentGroup || hit;
+    parent.traverse((child) => {
+      if (
+  child.isMesh &&
+  child.material.emissive &&
+  child.name.endsWith("_Hover")
+) {
+
+        child.material.emissive.set(0xff0000);
+        currentHovered.add(child);
+        if (!scaledHoverObjects.has(child)) {
+  const initialScale = child.userData.initialScale || new THREE.Vector3(1, 1, 1);
+ const targetScale = new THREE.Vector3().copy(initialScale).multiplyScalar(1.4); // or 1.5
+
+// Clamp each axis to max scale limit
+targetScale.x = Math.min(targetScale.x, MAX_HOVER_SCALE);
+targetScale.y = Math.min(targetScale.y, MAX_HOVER_SCALE);
+targetScale.z = Math.min(targetScale.z, MAX_HOVER_SCALE);
+
+gsap.to(child.scale, {
+  x: targetScale.x,
+  y: targetScale.y,
+  z: targetScale.z,
+  duration: 0.3,
+  ease: "power2.out"
+});
+
+  scaledHoverObjects.add(child);
+}
+
+      }
+    });
+    document.body.style.cursor = "pointer";
+  } else {
+    document.body.style.cursor = "default";
+  }
+
+  scaledHoverObjects.forEach((obj) => {
+    if (!currentHovered.has(obj)) {
+      const originalScale = obj.userData.initialScale || new THREE.Vector3(1, 1, 1);
+gsap.to(obj.scale, {
+  x: originalScale.x,
+  y: originalScale.y,
+  z: originalScale.z,
+  duration: 0.3,
+  ease: "power2.out"
+});
+
+      scaledHoverObjects.delete(obj);
+    }
+  });
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+
+/* ---------------------------------
+   Interactions
+----------------------------------*/
+window.addEventListener("click", () => {
+  const intersects = raycaster.intersectObjects(raycasterObjects);
+  if (intersects.length === 0) return;
+
+  const object = intersects[0].object;
+  const objectName = object.name;
+  const baseName = objectName.replace("_Hover", "");
+
+  if (socialLinks[objectName] || socialLinks[baseName]) {
+    const link = socialLinks[objectName] || socialLinks[baseName];
+    window.open(link, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  switch (baseName) {
+    case "Work_Raycaster": showModal(modals.work); break;
+    case "About_Raycaster": showModal(modals.about); break;
+    case "Contact_Raycaster": showModal(modals.contact); break;
+    case "Folder_Raycaster": showModal(modals.folder); break;
+  }
+
+  if (videoElement.paused) {
+    videoElement.play().catch(err => console.error("Video play blocked:", err));
+  }
 });
