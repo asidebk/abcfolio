@@ -88,6 +88,7 @@
   /* ---------------------------------
     Modals
   ----------------------------------*/
+ 
   const modals = {
     work: document.querySelector(".modal.work"),
     about: document.querySelector(".modal.about"),
@@ -184,6 +185,7 @@ loadingManager.onLoad = () => {
 };
 
 
+
   /* ---------------------------------
     GLTF Load
   ----------------------------------*/
@@ -224,40 +226,47 @@ loadingManager.onLoad = () => {
         action.play();
       });
 
-      window.addEventListener("click", () => {
+window.addEventListener("click", (event) => {
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(raycasterObjects, true);
 
-  if (intersects.length > 0) {
-    const clickedObject = intersects[0].object;
-    const name = clickedObject.name;
+  if (intersects.length === 0) return;
 
-    switch (name) {
-      case "About_Raycaster":
-      case "About_Raycaster_Hover":
-        showModal(modals.about);
-        break;
+  const clickedObject = intersects[0].object;
+  const name = clickedObject.name;
 
-      case "Contact_Raycaster":
-      case "Contact_Raycaster_Hover":
-        showModal(modals.contact);
-        break;
+  const interactiveNames = [
+    "Work_Raycaster", "Work_Raycaster_Hover",
+    "About_Raycaster", "About_Raycaster_Hover",
+    "Contact_Raycaster", "Contact_Raycaster_Hover",
+    "Folder_Raycaster", "Folder_Raycaster_Hover"
+  ];
 
-      case "Work_Raycaster":
-      case "Work_Raycaster_Hover":
-        showModal(modals.work);
-        break;
+  if (!interactiveNames.includes(name)) return;
 
-      case "Folder_Raycaster":
-      case "Folder_Raycaster_Hover":
-        showModal(modals.folder);
-        break;
+  switch (name) {
+    case "Work_Raycaster":
+    case "Work_Raycaster_Hover":
+      showModal(modals.work);
+      break;
 
-      default:
-        console.log("No modal assigned to this object:", name);
-    }
+    case "About_Raycaster":
+    case "About_Raycaster_Hover":
+      showModal(modals.about);
+      break;
+
+    case "Contact_Raycaster":
+    case "Contact_Raycaster_Hover":
+      showModal(modals.contact);
+      break;
+
+    case "Folder_Raycaster":
+    case "Folder_Raycaster_Hover":
+      showModal(modals.folder);
+      break;
   }
 });
+
 
   gltf.scene.traverse((child) => {
     if (child.name.endsWith("_Hover")) {
