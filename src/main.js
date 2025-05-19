@@ -157,8 +157,32 @@ const hideModal = (modal) => {
   ----------------------------------*/
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath("/draco/");
-  const gltfLoader = new GLTFLoader();
+  const loadingManager = new THREE.LoadingManager();
+  const gltfLoader = new GLTFLoader(loadingManager);
+  
   gltfLoader.setDRACOLoader(dracoLoader);
+  loadingManager.onProgress = (url, loaded, total) => {
+  const percent = Math.round((loaded / total) * 100);
+  document.querySelector(".progress").style.width = `${percent}%`;
+};
+loadingManager.onProgress = (url, loaded, total) => {
+  const percent = Math.round((loaded / total) * 100);
+  const progressBar = document.querySelector(".progress");
+  const loadingText = document.getElementById("loading-text");
+  if (progressBar) progressBar.style.width = `${percent}%`;
+  if (loadingText) loadingText.textContent = `Loading ${percent}%`;
+  console.log(`Loading progress: ${percent}%`);
+};
+
+loadingManager.onLoad = () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  if (!loadingScreen) return;
+  loadingScreen.style.opacity = 0;
+  setTimeout(() => {
+    loadingScreen.style.display = "none";
+  }, 500);
+};
+
 
   /* ---------------------------------
     GLTF Load
