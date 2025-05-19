@@ -5,49 +5,65 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <style>
+      .modal {
+        color: white; /* <-- Set text color to white */
+      }
+
+      .modal-title {
+        color: white; /* <-- Ensure titles are also white */
+      }
+
+      .modal-exit-button {
+        color: white;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      /* Optional: Set a dark background so the white text is visible */
+      .modal {
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 1rem;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
 
-<div class="modal about">
-  
-  <h1 class="modal-title">aboutaboutaboutaboutabout</h1>
-  <button class="modal-exit-button">EXIT MODALLLL</button></div>
-
-<div class="modal contact">
-  
-  <h1 class="modal-title">contactcontactcontactcontactcontact</h1>
-  <button class="modal-exit-button">EXIT MODALLLL</button></div>
-
-<div class="modal work">
-  <div class="slider-container">
-    <button class="modal-exit-button">&times;</button>
-    <div class="modal work">
-  <button class="modal-exit-button">×</button>
-</div>
-
-    <div class="slider-track">
-      <div class="slide"><img src="/images/Project1.jpg" alt="Project 1" /></div>
-      <div class="slide"><img src="/images/Project2.jpg" alt="Project 2" /></div>
-      <div class="slide"><img src="/images/Project3.jpg" alt="Project 3" /></div>
+    <div class="modal about">
+      <h1 class="modal-title">aboutaboutaboutaboutabout</h1>
+      <button class="modal-exit-button">&times;</button>
     </div>
-    <button class="slider-button prev">←</button>
-    <button class="slider-button next">→</button>
-  </div>
-</div>
 
+    <div class="modal contact">
+      <h1 class="modal-title">contactcontactcontactcontactcontact</h1>
+      <button class="modal-exit-button">&times;</button>
+    </div>
 
+    <div class="modal work">
+      <div class="slider-container">
+        <button class="modal-exit-button">&times;</button>
+        <div class="slider-track">
+          <div class="slide"><img src="/images/Project1.jpg" alt="Project 1" /></div>
+          <div class="slide"><img src="/images/Project2.jpg" alt="Project 2" /></div>
+          <div class="slide"><img src="/images/Project3.jpg" alt="Project 3" /></div>
+        </div>
+        <button class="slider-button prev">←</button>
+        <button class="slider-button next">→</button>
+      </div>
+    </div>
 
-<div class="modal folder">
-  
-  <h1 class="modal-title">folderfolderfolderfolderfolder</h1>
-  <button class="modal-exit-button">EXIT MODALLLL</button></div>
+    <div class="modal folder">
+      <h1 class="modal-title">folderfolderfolderfolderfolder</h1>
+      <button class="modal-exit-button">&times;</button>
+    </div>
 
+    <div id="experience">
+      <canvas id="experience-canvas"></canvas>
+    </div>
 
-   <div id="experience">
-    <canvas id="experience-canvas"></canvas>
-
-   </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
