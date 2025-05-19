@@ -31,17 +31,179 @@
 }
 
 // Modals
-.modal {
+.modal.work {
+  display: none; // Initially hidden
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 32px;
-  color: white; // set this so it's visible on dark backgrounds
-  z-index: 10; // must be higher than canvas
-  pointer-events: auto; // allow interaction if needed
-  background: rgba(0, 0, 0, 0.5); // optional: adds contrast
-  padding: 1rem;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .modal-exit-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2.5rem !important;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
   border-radius: 8px;
-  display: none;
+  color: white; // 👈 this is the key line
 }
+
+
+
+  .slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 500px;
+  }
+
+  .slider-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    height: 100%;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  }
+
+  .slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    z-index: 10;
+
+    &.prev { left: 10px; }
+    &.next { right: 10px; }
+  }
+}
+
+
+.modal.work {
+  display: none; // Hidden initially
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex; // Centering modal content
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Center content horizontally
+    justify-content: center; // Center content vertically
+  }
+
+  .modal-exit-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+.modal-exit-button {
+  font-size: 2.5rem !important; // increase size
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+}
+
+
+  .slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slider-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    height: 100%;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 100%;
+    width: 100%;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  }
+
+  .slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    z-index: 10;
+
+    &.prev { left: 10px; }
+    &.next { right: 10px; }
+  }
+}
+
+
+
+
+
+
+
