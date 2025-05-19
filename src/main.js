@@ -299,56 +299,67 @@ const hideModal = (modal) => {
     if (intersects.length > 0) {
       const hit = intersects[0].object;
       const parent = hit.userData.parentGroup || hit;
+
       parent.traverse((child) => {
         if (
-    child.isMesh &&
-    child.material.emissive &&
-    child.name.endsWith("_Hover")
-  ) {
-
-          child.material.emissive.set(0xff0000);
+          child.isMesh &&
+          child.material.emissive &&
+          child.name.endsWith("_Hover")
+        ) {
+          // Mark as currently hovered
           currentHovered.add(child);
+
+          // Set emissive color if not already set
+          child.material.emissive.set(0xff0000);
+
+          // Scale up if not already scaled
           if (!scaledHoverObjects.has(child)) {
-    const initialScale = child.userData.initialScale || new THREE.Vector3(1, 1, 1);
-  const targetScale = new THREE.Vector3().copy(initialScale).multiplyScalar(1.4); // or 1.5
+            const initialScale = child.userData.initialScale || new THREE.Vector3(1, 1, 1);
+            const targetScale = new THREE.Vector3().copy(initialScale).multiplyScalar(1.4);
 
-  // Clamp each axis to max scale limit
-  targetScale.x = Math.min(targetScale.x, MAX_HOVER_SCALE);
-  targetScale.y = Math.min(targetScale.y, MAX_HOVER_SCALE);
-  targetScale.z = Math.min(targetScale.z, MAX_HOVER_SCALE);
+            // Clamp to max
+            targetScale.x = Math.min(targetScale.x, MAX_HOVER_SCALE);
+            targetScale.y = Math.min(targetScale.y, MAX_HOVER_SCALE);
+            targetScale.z = Math.min(targetScale.z, MAX_HOVER_SCALE);
 
-  gsap.to(child.scale, {
-    x: targetScale.x,
-    y: targetScale.y,
-    z: targetScale.z,
-    duration: 0.3,
-    ease: "power2.out"
-  });
+            gsap.to(child.scale, {
+              x: targetScale.x,
+              y: targetScale.y,
+              z: targetScale.z,
+              duration: 0.3,
+              ease: "power2.out"
+            });
 
-    scaledHoverObjects.add(child);
-  }
-
+            scaledHoverObjects.add(child);
+          }
         }
       });
+
       document.body.style.cursor = "pointer";
     } else {
       document.body.style.cursor = "default";
     }
 
+    // Reset emissive and scale for un-hovered objects
     scaledHoverObjects.forEach((obj) => {
       if (!currentHovered.has(obj)) {
+        // Reset scale
         const originalScale = obj.userData.initialScale || new THREE.Vector3(1, 1, 1);
-  gsap.to(obj.scale, {
-    x: originalScale.x,
-    y: originalScale.y,
-    z: originalScale.z,
-    duration: 0.3,
-    ease: "power2.out"
-  });
+        gsap.to(obj.scale, {
+          x: originalScale.x,
+          y: originalScale.y,
+          z: originalScale.z,
+          duration: 0.3,
+          ease: "power2.out"
+        });
+
+        // Reset emissive color
+        obj.material.emissive.set(0x000000);
 
         scaledHoverObjects.delete(obj);
       }
     });
+
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -468,7 +479,3 @@ window.addEventListener("click", () => {
     videoElement.play().catch(err => console.error("Video play blocked:", err));
   }
 });
-
-
-
-
