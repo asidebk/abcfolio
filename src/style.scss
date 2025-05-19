@@ -47,8 +47,10 @@
 
 .modal.about .modal-content,
 .modal.contact .modal-content,
-.modal.folder .modal-content {
-  background: #fff;
+.modal.folder .modal-content,
+.modal.work .modal-content {
+  background: #111; /* or rgba(0, 0, 0, 0.85) for some transparency */
+  color: white;     /* <--- Ensures all text is white */
   padding: 2rem;
   border-radius: 12px;
   width: 80%;
@@ -57,6 +59,7 @@
   overflow: hidden;
   position: relative;
 }
+
 
 /* Common modal exit button styles with white color */
 .modal.work .modal-exit-button,
