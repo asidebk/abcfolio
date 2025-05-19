@@ -63,6 +63,12 @@
   const raycasterObjects = [];
   let scaledHoverObjects = new Set();
 
+  window.addEventListener("pointermove", (event) => {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+
+  
   window.addEventListener("mousemove", (e) => {
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -193,6 +199,41 @@ const hideModal = (modal) => {
         action.timeScale = 0.2;
         action.play();
       });
+
+      window.addEventListener("click", () => {
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(raycasterObjects, true);
+
+  if (intersects.length > 0) {
+    const clickedObject = intersects[0].object;
+    const name = clickedObject.name;
+
+    switch (name) {
+      case "About_Raycaster":
+      case "About_Raycaster_Hover":
+        showModal(modals.about);
+        break;
+
+      case "Contact_Raycaster":
+      case "Contact_Raycaster_Hover":
+        showModal(modals.contact);
+        break;
+
+      case "Work_Raycaster":
+      case "Work_Raycaster_Hover":
+        showModal(modals.work);
+        break;
+
+      case "Folder_Raycaster":
+      case "Folder_Raycaster_Hover":
+        showModal(modals.folder);
+        break;
+
+      default:
+        console.log("No modal assigned to this object:", name);
+    }
+  }
+});
 
   gltf.scene.traverse((child) => {
     if (child.name.endsWith("_Hover")) {
