@@ -1,9 +1,11 @@
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Root font styles */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-synthesis: none;
@@ -12,7 +14,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-// Experience 
+/* Experience */
 #experience {
   position: fixed;
   height: 100%;
@@ -20,190 +22,212 @@
   top: 0;
   left: 0;
   overflow: hidden;
-
-  #experience-canvas {
-    height: 100%;
-    width: 100%;
-    display: block; // ensures no browser-added inline gaps
-    z-index: 0; // ensure this doesn't sit above modal
-    position: absolute;
-  }
 }
 
-// Modals
-.modal.work {
-  display: none; // Initially hidden
+#experience #experience-canvas {
+  height: 100%;
+  width: 100%;
+  display: block; /* ensures no browser-added inline gaps */
+  z-index: 0; /* ensure this doesn't sit above modal */
+  position: absolute;
+}
+
+/* Modals */
+.modal.about,
+.modal.contact,
+.modal.folder {
+  display: none;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
 
-  .modal-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 900px;
-    max-height: 80vh;
-    overflow: hidden;
-    position: relative;
-  }
+.modal.about .modal-content,
+.modal.contact .modal-content,
+.modal.folder .modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+}
 
-  .modal-exit-button {
+/* Common modal exit button styles with white color */
+.modal.work .modal-exit-button,
+.modal.about .modal-exit-button,
+.modal.contact .modal-exit-button,
+.modal.folder .modal-exit-button {
   position: absolute;
   top: 10px;
   right: 15px;
-  font-size: 2.5rem !important;
+  font-size: 2.5rem !important; /* increased size */
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
-  color: white; // 👈 this is the key line
+  color: white; /* make exit button text white */
 }
 
 
-
-  .slider {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 500px;
-  }
-
-  .slider-track {
-    display: flex;
-    transition: transform 0.5s ease;
-    height: 100%;
-  }
-
-  .slide {
-    min-width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-  }
-
-  .slider-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.7);
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    z-index: 10;
-
-    &.prev { left: 10px; }
-    &.next { right: 10px; }
-  }
+/* Slider inside about/contact/folder modals */
+.modal.about .slider,
+.modal.contact .slider,
+.modal.folder .slider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 500px;
 }
 
+.modal.about .slider-track,
+.modal.contact .slider-track,
+.modal.folder .slider-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  height: 100%;
+}
 
+.modal.about .slide,
+.modal.contact .slide,
+.modal.folder .slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.about .slide img,
+.modal.contact .slide img,
+.modal.folder .slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.modal.about .slider-button,
+.modal.contact .slider-button,
+.modal.folder .slider-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  z-index: 10;
+}
+
+.modal.about .slider-button.prev,
+.modal.contact .slider-button.prev,
+.modal.folder .slider-button.prev {
+  left: 10px;
+}
+
+.modal.about .slider-button.next,
+.modal.contact .slider-button.next,
+.modal.folder .slider-button.next {
+  right: 10px;
+}
+
+/* Work modal */
 .modal.work {
-  display: none; // Hidden initially
+  display: none; /* Hidden initially */
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
-  display: flex; // Centering modal content
+  display: flex; /* Centering modal content */
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
 
-  .modal-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 900px;
-    max-height: 80vh;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center; // Center content horizontally
-    justify-content: center; // Center content vertically
-  }
+.modal.work .modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+}
 
-  .modal-exit-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-.modal-exit-button {
-  font-size: 2.5rem !important; // increase size
+.modal.work .modal-exit-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 2.5rem !important; /* increased size */
+  background: none;
+  border: none;
+  cursor: pointer;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
 }
 
-
-  .slider {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .slider-track {
-    display: flex;
-    transition: transform 0.5s ease;
-    height: 100%;
-  }
-
-  .slide {
-    min-width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 100%;
-    width: 100%;
-
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-  }
-
-  .slider-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.7);
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    z-index: 10;
-
-    &.prev { left: 10px; }
-    &.next { right: 10px; }
-  }
+/* Slider inside work modal */
+.modal.work .slider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.modal.work .slider-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  height: 100%;
+}
 
+.modal.work .slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 100%;
+  width: 100%;
+}
 
+.modal.work .slide img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
 
+.modal.work .slider-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  z-index: 10;
+}
 
+.modal.work .slider-button.prev {
+  left: 10px;
+}
 
-
+.modal.work .slider-button.next {
+  right: 10px;
+}
