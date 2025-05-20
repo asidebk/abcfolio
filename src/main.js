@@ -69,11 +69,7 @@
 });
 
   
-  window.addEventListener("mousemove", (e) => {
-    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
-    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  });
-
+ 
   /* ---------------------------------
     Resize Handling
   ----------------------------------*/
@@ -184,36 +180,58 @@ loadingManager.onLoad = () => {
   }, 500);
 };
 
+const animatedOnLoad = new Set();
+
+function animateRaycasterButtonsOnLoad() {
+  raycasterObjects.forEach((obj, index) => {
+    if (animatedOnLoad.has(obj)) return; // Already animated
+
+    const targetScale = obj.userData.initialScale?.clone() || new THREE.Vector3(1, 1, 1);
+
+    // Start from zero scale for entrance animation
+    obj.scale.set(0, 0, 0);
+
+    gsap.to(obj.scale, {
+      x: targetScale.x,
+      y: targetScale.y,
+      z: targetScale.z,
+      duration: 1,
+      ease: "back.out(1.7)",
+      delay: index * 0.1,
+      onComplete: () => {
+        animatedOnLoad.add(obj);
+      }
+    });
+  });
+}
+
+
 
 
   /* ---------------------------------
     GLTF Load
   ----------------------------------*/
-  function prepareRaycasterMesh(object, name) {
-    if (!object) return console.warn(`⚠️ ${name} not found.`);
-    object.traverse(child => {
-      if (child.isMesh) {
-      
+function prepareRaycasterMesh(object, name) {
+  if (!object) return console.warn(`⚠️ ${name} not found.`);
+  object.traverse(child => {
+    if (child.isMesh) {
+      // Always store initial scale
+      child.userData.initialScale = child.scale.clone();
 
-        // Add hover-specific data and materials
-        if (child.name.endsWith("_Hover")) {
-          child.userData.initialScale = child.scale.clone();
-          child.userData.initialPosition = child.position.clone();
-        }
-
-        if (!child.material.emissive) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: child.material.color || new THREE.Color(0xffffff),
-            emissive: new THREE.Color(0x000000),
-            metalness: 0.2,
-            roughness: 0.5,
-          });
-        }
-        child.userData.parentGroup = object;
-        raycasterObjects.push(child);
+      if (!child.material.emissive) {
+        child.material = new THREE.MeshStandardMaterial({
+          color: child.material.color || new THREE.Color(0xffffff),
+          emissive: new THREE.Color(0x000000),
+          metalness: 0.2,
+          roughness: 0.5,
+        });
       }
-    });
-  }
+      child.userData.parentGroup = object;
+      raycasterObjects.push(child);
+    }
+  });
+}
+
 
   gltfLoader.load(
     "/models/Room_Animate_New.glb",
@@ -301,7 +319,14 @@ window.addEventListener("click", (event) => {
       ];
       targets.forEach(name => prepareRaycasterMesh(gltf.scene.getObjectByName(name), name));
 
-      animate();
+      targets.forEach(name => prepareRaycasterMesh(gltf.scene.getObjectByName(name), name));
+
+      animateRaycasterButtonsOnLoad(); // Animate raycaster buttons on load
+
+      animate(); // Start render loop
+
+      
+
     },
     xhr => console.log(`GLB ${(xhr.loaded / xhr.total * 100).toFixed(1)}% loaded`),
     err => console.error("GLB load error:", err)
@@ -346,25 +371,30 @@ window.addEventListener("click", (event) => {
           child.material.emissive.set(0xff0000);
 
           // Scale up if not already scaled
-          if (!scaledHoverObjects.has(child)) {
-            const initialScale = child.userData.initialScale || new THREE.Vector3(1, 1, 1);
-            const targetScale = new THREE.Vector3().copy(initialScale).multiplyScalar(1.4);
+         if (!scaledHoverObjects.has(child)) {
+  const initialScale = child.userData.initialScale || new THREE.Vector3(1, 1, 1);
+  const targetScale = new THREE.Vector3().copy(initialScale).multiplyScalar(1.4);
 
-            // Clamp to max
-            targetScale.x = Math.min(targetScale.x, MAX_HOVER_SCALE);
-            targetScale.y = Math.min(targetScale.y, MAX_HOVER_SCALE);
-            targetScale.z = Math.min(targetScale.z, MAX_HOVER_SCALE);
+  // Clamp to max
+  targetScale.x = Math.min(targetScale.x, MAX_HOVER_SCALE);
+  targetScale.y = Math.min(targetScale.y, MAX_HOVER_SCALE);
+  targetScale.z = Math.min(targetScale.z, MAX_HOVER_SCALE);
 
-            gsap.to(child.scale, {
-              x: targetScale.x,
-              y: targetScale.y,
-              z: targetScale.z,
-              duration: 0.3,
-              ease: "power2.out"
-            });
+  // Only animate if current scale is different
+  if (!child.scale.equals(targetScale)) {
+    gsap.killTweensOf(child.scale); // Kill any in-progress tween on this object
+    gsap.to(child.scale, {
+      x: targetScale.x,
+      y: targetScale.y,
+      z: targetScale.z,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  }
 
-            scaledHoverObjects.add(child);
-          }
+  scaledHoverObjects.add(child);
+}
+
         }
       });
 
@@ -375,22 +405,24 @@ window.addEventListener("click", (event) => {
 
     // Reset emissive and scale for un-hovered objects
     scaledHoverObjects.forEach((obj) => {
-      if (!currentHovered.has(obj)) {
-        // Reset scale
-        const originalScale = obj.userData.initialScale || new THREE.Vector3(1, 1, 1);
-        gsap.to(obj.scale, {
-          x: originalScale.x,
-          y: originalScale.y,
-          z: originalScale.z,
-          duration: 0.3,
-          ease: "power2.out"
-        });
+    if (!currentHovered.has(obj)) {
+  const originalScale = obj.userData.initialScale || new THREE.Vector3(1, 1, 1);
+  
+  if (!obj.scale.equals(originalScale)) {
+    gsap.killTweensOf(obj.scale);
+    gsap.to(obj.scale, {
+      x: originalScale.x,
+      y: originalScale.y,
+      z: originalScale.z,
+      duration: 0.3,
+      ease: "power2.out"
+    });
+  }
 
-        // Reset emissive color
-        obj.material.emissive.set(0x000000);
+  obj.material.emissive.set(0x000000);
+  scaledHoverObjects.delete(obj);
+}
 
-        scaledHoverObjects.delete(obj);
-      }
     });
 
 
