@@ -80,6 +80,7 @@
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   color: white; /* make exit button text white */
+  z-index: 1001;
 }
 
 
@@ -156,7 +157,7 @@
   display:none; /* Centering modal content */
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .modal.work .modal-content {
@@ -267,4 +268,3 @@
   background: #00ffcc;
   transition: width 0.2s ease;
 }
-
