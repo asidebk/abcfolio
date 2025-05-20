@@ -30,7 +30,8 @@
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.target.set(0.0445, 1.992, 0.269);
-
+controls.minPolarAngle = 0;           // camera can't go below looking straight down
+controls.maxPolarAngle = Math.PI / 2;
   /* ---------------------------------
     Lights
   ----------------------------------*/
@@ -315,7 +316,7 @@ window.addEventListener("click", (event) => {
         "Insta_Raycaster", "Fb_Raycaster", "Folder_Raycaster", "Imac_Raycaster", "Mouse_Raycaster",
         "Work_Raycaster", "About_Raycaster", "Contact_Raycaster",
         "Work_Raycaster_Hover", "About_Raycaster_Hover", "Contact_Raycaster_Hover",
-        "Folder_Raycaster_Hover", "Fb_Raycaster_Hover", "Insta_Raycaster_Hover"
+        "Folder_Raycaster_Hover", "Fb_Raycaster_Hover", "Insta_Raycaster_Hover", "Imac_Raycaster_Hover"
       ];
       targets.forEach(name => prepareRaycasterMesh(gltf.scene.getObjectByName(name), name));
 
