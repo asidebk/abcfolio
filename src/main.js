@@ -245,46 +245,51 @@ function prepareRaycasterMesh(object, name) {
         action.play();
       });
 
-window.addEventListener("click", (event) => {
-  raycaster.setFromCamera(pointer, camera);
-  const intersects = raycaster.intersectObjects(raycasterObjects, true);
+window.addEventListener("touchstart", (event) => {
+  if (event.touches.length > 0) {
+    const touch = event.touches[0];
+    pointer.x = (touch.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(touch.clientY / window.innerHeight) * 2 + 1;
 
-  if (intersects.length === 0) return;
+    // Trigger raycast on touch
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObjects(raycasterObjects, true);
 
-  const clickedObject = intersects[0].object;
-  const name = clickedObject.name;
+    if (intersects.length === 0) return;
 
-  const interactiveNames = [
-    "Work_Raycaster", "Work_Raycaster_Hover",
-    "About_Raycaster", "About_Raycaster_Hover",
-    "Contact_Raycaster", "Contact_Raycaster_Hover",
-    "Folder_Raycaster", "Folder_Raycaster_Hover"
-  ];
+    const clickedObject = intersects[0].object;
+    const name = clickedObject.name;
 
-  if (!interactiveNames.includes(name)) return;
+    const interactiveNames = [
+      "Work_Raycaster", "Work_Raycaster_Hover",
+      "About_Raycaster", "About_Raycaster_Hover",
+      "Contact_Raycaster", "Contact_Raycaster_Hover",
+      "Folder_Raycaster", "Folder_Raycaster_Hover"
+    ];
 
-  switch (name) {
-    case "Work_Raycaster":
-    case "Work_Raycaster_Hover":
-      showModal(modals.work);
-      break;
+    if (!interactiveNames.includes(name)) return;
 
-    case "About_Raycaster":
-    case "About_Raycaster_Hover":
-      showModal(modals.about);
-      break;
-
-    case "Contact_Raycaster":
-    case "Contact_Raycaster_Hover":
-      showModal(modals.contact);
-      break;
-
-    case "Folder_Raycaster":
-    case "Folder_Raycaster_Hover":
-      showModal(modals.folder);
-      break;
+    switch (name) {
+      case "Work_Raycaster":
+      case "Work_Raycaster_Hover":
+        showModal(modals.work);
+        break;
+      case "About_Raycaster":
+      case "About_Raycaster_Hover":
+        showModal(modals.about);
+        break;
+      case "Contact_Raycaster":
+      case "Contact_Raycaster_Hover":
+        showModal(modals.contact);
+        break;
+      case "Folder_Raycaster":
+      case "Folder_Raycaster_Hover":
+        showModal(modals.folder);
+        break;
+    }
   }
 });
+
 
 
   gltf.scene.traverse((child) => {
