@@ -91,11 +91,16 @@ controls.maxPolarAngle = Math.PI / 2;
     about: document.querySelector(".modal.about"),
     contact: document.querySelector(".modal.contact"),
     folder: document.querySelector(".modal.folder"),
+    imac: document.querySelector(".modal.imac"),
   };
 const showModal = (modal) => {
-  gsap.killTweensOf(modal); // Clear previous tweens
-  modal.style.display = "flex"; // Ensure it's visible
+  gsap.killTweensOf(modal);
+  modal.style.display = "flex";
   gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.5 });
+
+  // Slider init
+  if (modal.classList.contains("work")) initWorkModalSlider();
+  if (modal.classList.contains("imac")) initImacModalSlider();
 };
 
 const hideModal = (modal) => {
@@ -245,50 +250,49 @@ function prepareRaycasterMesh(object, name) {
         action.play();
       });
 
-window.addEventListener("touchstart", (event) => {
-  if (event.touches.length > 0) {
-    const touch = event.touches[0];
-    pointer.x = (touch.clientX / window.innerWidth) * 2 - 1;
-    pointer.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+window.addEventListener("click", (event) => {
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(raycasterObjects, true);
 
-    // Trigger raycast on touch
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects(raycasterObjects, true);
+  if (intersects.length === 0) return;
 
-    if (intersects.length === 0) return;
+  const clickedObject = intersects[0].object;
+  const name = clickedObject.name;
 
-    const clickedObject = intersects[0].object;
-    const name = clickedObject.name;
+  const interactiveNames = [
+    "Work_Raycaster", "Work_Raycaster_Hover",
+    "About_Raycaster", "About_Raycaster_Hover",
+    "Contact_Raycaster", "Contact_Raycaster_Hover",
+    "Folder_Raycaster", "Folder_Raycaster_Hover",
+    "Imac_Raycaster", "Imac_Raycaster_Hover"
+  ];
 
-    const interactiveNames = [
-      "Work_Raycaster", "Work_Raycaster_Hover",
-      "About_Raycaster", "About_Raycaster_Hover",
-      "Contact_Raycaster", "Contact_Raycaster_Hover",
-      "Folder_Raycaster", "Folder_Raycaster_Hover"
-    ];
+  if (!interactiveNames.includes(name)) return;
 
-    if (!interactiveNames.includes(name)) return;
-
-    switch (name) {
-      case "Work_Raycaster":
-      case "Work_Raycaster_Hover":
-        showModal(modals.work);
-        break;
-      case "About_Raycaster":
-      case "About_Raycaster_Hover":
-        showModal(modals.about);
-        break;
-      case "Contact_Raycaster":
-      case "Contact_Raycaster_Hover":
-        showModal(modals.contact);
-        break;
-      case "Folder_Raycaster":
-      case "Folder_Raycaster_Hover":
-        showModal(modals.folder);
-        break;
-    }
+  switch (name) {
+    case "Work_Raycaster":
+    case "Work_Raycaster_Hover":
+      showModal(modals.work);
+      break;
+    case "About_Raycaster":
+    case "About_Raycaster_Hover":
+      showModal(modals.about);
+      break;
+    case "Contact_Raycaster":
+    case "Contact_Raycaster_Hover":
+      showModal(modals.contact);
+      break;
+    case "Folder_Raycaster":
+    case "Folder_Raycaster_Hover":
+      showModal(modals.folder);
+      break;
+    case "Imac_Raycaster":
+    case "Imac_Raycaster_Hover":
+      showModal(modals.imac);
+      break;
   }
 });
+
 
 
 
@@ -479,6 +483,58 @@ function initWorkModalSlider() {
     }
   });
 
+  let imacSliderInitialized = false;
+
+function initImacModalSlider() {
+  if (sliderInitialized) return; // Prevent multiple inits
+  sliderInitialized = true;
+
+  const ImacModal = document.querySelector(".modal.work");
+  const track = workModal.querySelector(".slider-track");
+  const slides = workModal.querySelectorAll(".slide");
+  const prevBtn = workModal.querySelector(".slider-button.prev");
+  const nextBtn = workModal.querySelector(".slider-button.next");
+
+  if (!track || !prevBtn || !nextBtn) {
+    console.warn("Slider elements not found in Work modal.");
+    return;
+  }
+
+  let currentIndex = 0;
+
+  function updateSlider() {
+    const offset = -currentIndex * 100;
+    track.style.transform = `translateX(${offset}%)`;
+  }
+
+  prevBtn.addEventListener("click", () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateSlider();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (currentIndex < slides.length - 1) {
+      currentIndex++;
+      updateSlider();
+    }
+  });
+
+  // Optional: mark slider as initialized to prevent duplicates
+  imacModal.dataset.sliderInitialized = "true";
+}
+
+
+  // Initialize style
+  track.style.display = "flex";
+  track.style.transition = "transform 0.3s ease";
+  slides.forEach(slide => {
+    slide.style.minWidth = "100%";
+  });
+}
+
+  
   // MutationObserver to reset on open
   const observer = new MutationObserver(() => {
     if (workModal.style.display === "block") {
@@ -488,7 +544,7 @@ function initWorkModalSlider() {
   });
 
   observer.observe(workModal, { attributes: true, attributeFilter: ["style"] });
-}
+
 
 // Call once
 document.addEventListener("DOMContentLoaded", initWorkModalSlider);
