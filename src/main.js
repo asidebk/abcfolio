@@ -293,6 +293,33 @@ window.addEventListener("click", (event) => {
   }
 });
 
+window.addEventListener("touchend", (event) => {
+  // Map to pointer
+  const touch = event.changedTouches[0];
+  pointer.x = (touch.clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+  const intersects = raycaster.intersectObjects(raycasterObjects, true);
+
+  if (intersects.length > 0) {
+    const name = intersects[0].object.name;
+    const modalMap = {
+      Work_Raycaster: modals.work,
+      Work_Raycaster_Hover: modals.work,
+      About_Raycaster: modals.about,
+      About_Raycaster_Hover: modals.about,
+      Contact_Raycaster: modals.contact,
+      Contact_Raycaster_Hover: modals.contact,
+      Folder_Raycaster: modals.folder,
+      Folder_Raycaster_Hover: modals.folder,
+      Imac_Raycaster: modals.imac,
+      Imac_Raycaster_Hover: modals.imac,
+    };
+
+    if (modalMap[name]) showModal(modalMap[name]);
+  }
+});
 
 
 
