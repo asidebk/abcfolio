@@ -167,3 +167,80 @@ body {
   background: #00ffcc;
   transition: width 0.2s ease;
 }
+
+/* ---------------------------------
+   Responsive Styles
+----------------------------------*/
+
+/* Make the canvas take full screen */
+#experience-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  touch-action: none; // Prevent scroll interference on mobile
+}
+
+/* Responsive Modal Styling */
+.modal {
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 12px;
+
+  &.work,
+  &.about,
+  &.contact,
+  &.folder,
+  &.imac {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.modal-content {
+  max-width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Exit button styling for mobile */
+.modal-exit-button {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Mobile-friendly typography */
+body {
+  font-size: 16px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
+}
+
+/* Adjust modal layout for smaller screens */
+@media (max-width: 768px) {
+  .modal {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Landscape mode handling */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  #experience-canvas {
+    height: 100dvh;
+  }
+
+  .modal {
+    max-height: 85dvh;
+  }
+}
