@@ -27,6 +27,15 @@
   display: block;
   z-index: 0;
 }
+canvas {
+  touch-action: none; // Prevent default gestures
+}
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 
 /* ========== Generic Modal Style ========== */
 .modal {
