@@ -447,83 +447,40 @@ window.addEventListener("click", (event) => {
 
 let sliderInitialized = false;
 
-function initWorkModalSlider() {
-  if (sliderInitialized) return; // Prevent multiple inits
-  sliderInitialized = true;
+function setupSlider(modalSelector) {
+  const modal = document.querySelector(modalSelector);
+  if (!modal) return;
 
-  const workModal = document.querySelector(".modal.work");
-  const track = workModal.querySelector(".slider-track");
-  const slides = workModal.querySelectorAll(".slide");
-  const prevBtn = workModal.querySelector(".slider-button.prev");
-  const nextBtn = workModal.querySelector(".slider-button.next");
-
-  if (!track || !prevBtn || !nextBtn) {
-    console.warn("Slider elements not found in Work modal.");
-    return;
-  }
-
-  let currentIndex = 0;
+  const track = modal.querySelector('.slider-track');
+  const slides = modal.querySelectorAll('.slide');
+  const prevBtn = modal.querySelector('.slider-button.prev');
+  const nextBtn = modal.querySelector('.slider-button.next');
+  let index = 0;
 
   function updateSlider() {
-    const offset = -currentIndex * 100;
-    track.style.transform = `translateX(${offset}%)`;
+    const width = slides[0].offsetWidth;
+    track.style.transform = `translateX(-${index * width}px)`;
   }
 
-  prevBtn.addEventListener("click", () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateSlider();
-    }
+  prevBtn.addEventListener('click', () => {
+    index = (index - 1 + slides.length) % slides.length;
+    updateSlider();
   });
 
-  nextBtn.addEventListener("click", () => {
-    if (currentIndex < slides.length - 1) {
-      currentIndex++;
-      updateSlider();
-    }
+  nextBtn.addEventListener('click', () => {
+    index = (index + 1) % slides.length;
+    updateSlider();
   });
 
-  let imacSliderInitialized = false;
+  window.addEventListener('resize', updateSlider);
+}
+setupSlider('.modal.work');
+setupSlider('.modal.imac');
 
-function initImacModalSlider() {
-  if (sliderInitialized) return; // Prevent multiple inits
-  sliderInitialized = true;
-
-  const ImacModal = document.querySelector(".modal.work");
-  const track = workModal.querySelector(".slider-track");
-  const slides = workModal.querySelectorAll(".slide");
-  const prevBtn = workModal.querySelector(".slider-button.prev");
-  const nextBtn = workModal.querySelector(".slider-button.next");
-
-  if (!track || !prevBtn || !nextBtn) {
-    console.warn("Slider elements not found in Work modal.");
-    return;
-  }
-
-  let currentIndex = 0;
-
-  function updateSlider() {
-    const offset = -currentIndex * 100;
-    track.style.transform = `translateX(${offset}%)`;
-  }
-
-  prevBtn.addEventListener("click", () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateSlider();
-    }
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if (currentIndex < slides.length - 1) {
-      currentIndex++;
-      updateSlider();
-    }
-  });
 
   // Optional: mark slider as initialized to prevent duplicates
   imacModal.dataset.sliderInitialized = "true";
-}
+
 
 
   // Initialize style
@@ -532,7 +489,7 @@ function initImacModalSlider() {
   slides.forEach(slide => {
     slide.style.minWidth = "100%";
   });
-}
+
 
   
   // MutationObserver to reset on open
