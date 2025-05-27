@@ -284,7 +284,8 @@ function prepareRaycasterMesh(object, name) {
 
 window.addEventListener("click", (event) => {
    if (event.target.tagName !== "CANVAS") return;
-
+  // Open social links if applicable
+ 
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(raycasterObjects, true);
 
@@ -304,6 +305,10 @@ window.addEventListener("click", (event) => {
 ];
 
   if (!interactiveNames.includes(name)) return;
+  if (socialLinks[name]) {
+  window.open(socialLinks[name], "_blank");
+  return;
+}
 
   switch (name) {
     case "Work_Raycaster":
