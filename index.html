@@ -40,15 +40,74 @@
 
     <div id="app"></div>
 
-    <div class="modal about">
-      <h1 class="modal-title">aboutaboutaboutaboutabout</h1>
-      <button class="modal-exit-button">&times;</button>
-    </div>
+  <div class="modal about" style="display: none; justify-content: center; align-items: center; text-align: center; flex-direction: column;">
+  <button class="modal-exit-button" style="align-self: flex-end;">&times;</button>
 
-    <div class="modal contact">
-      <h1 class="modal-title">contactcontactcontactcontactcontact</h1>
-      <button class="modal-exit-button">&times;</button>
+  <!-- Double the image size: 150px → 300px -->
+  <img src="/images/me.jpg" alt="Adrian Castillo"
+       style="width: 300px; height: 300px; border-radius: 50%; object-fit: cover; margin-bottom: 2rem;" />
+
+  <!-- Double the title size -->
+  <h1 class="modal-title" style="font-size: 3rem;">Adrian B Castillo</h1>
+
+  <!-- Double the paragraph size -->
+  <p style="max-width: 800px; color: white; font-size: 2rem; line-height: 1.7;">
+    I'm a multidisciplinary designer specializing in motion graphics, 3D animation, and interactive experiences. With a strong background in Adobe Creative Suite, Blender, and Three.js, I build compelling visual content that blends design with technology.
+  </p>
+</div>
+
+
+
+ <section id="contact" class="modal contact" style="display: none; flex-direction: column; color: white;">
+  <button class="modal-exit-button" style="align-self: flex-end;">&times;</button>
+  <h1 class="modal-title section-header" style="font-size: 2.5rem;">Contact</h1>
+  
+  <div class="contact-wrapper" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; padding: 1.5rem;">
+    
+    <!-- Left: Contact Form -->
+    <form id="contact-form" class="form-horizontal" role="form" style="flex: 1; min-width: 280px; font-size: 1.25rem;">
+      <div class="form-group">
+        <input type="text" class="form-control" id="name" placeholder="NAME" name="name" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
+      </div>
+
+      <div class="form-group">
+        <input type="email" class="form-control" id="email" placeholder="EMAIL" name="email" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
+      </div>
+
+      <textarea class="form-control" rows="5" placeholder="MESSAGE" name="message" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;"></textarea>
+
+      <button class="btn btn-primary send-button" id="submit" type="submit" value="SEND" style="padding: 0.5rem 1rem; font-size: 1.1rem;">
+        <div class="alt-send-button">
+          <i class="fa fa-paper-plane"></i><span class="send-text"> SEND</span>
+        </div>
+      </button>
+    </form>
+
+    <!-- Right: Direct Contact Info -->
+    <div class="direct-contact-container" style="flex: 1; min-width: 280px; font-size: 1.25rem;">
+      <ul class="contact-list" style="list-style: none; padding: 0;">
+        <li class="list-item"><i class="fa fa-map-marker fa-2x"></i> <span class="contact-text place">131 Beach 119th St Rockaway Park, NY 11694</span></li>
+        <li class="list-item"><i class="fa fa-phone fa-2x"></i> <span class="contact-text phone"><a href="tel:917-715-4432" title="Give me a call">(212) 555-2368</a></span></li>
+        <li class="list-item"><i class="fa fa-envelope fa-2x"></i> <span class="contact-text gmail"><a href="mailto:abc.designsnyc@gmail.com">abc.designsnyc@gmail.com</a></span></li>
+      </ul>
+
+      <hr style="margin: 0.75rem 0;">
+      
+      <ul class="social-media-list" style="display: flex; gap: 0.75rem; list-style: none; padding: 0;">
+        <li><a href="#" class="contact-icon"><i class="fa fa-github"></i></a></li>
+        <li><a href="#" class="contact-icon"><i class="fa fa-codepen"></i></a></li>
+        <li><a href="#" class="contact-icon"><i class="fa fa-twitter"></i></a></li>
+        <li><a href="#" class="contact-icon"><i class="fa fa-instagram"></i></a></li>
+      </ul>
+
+      <hr style="margin: 0.75rem 0;">
+      <div class="copyright">&copy; ALL OF THE RIGHTS RESERVED</div>
     </div>
+  </div>
+</section>
+
+
+
 
     <div class="modal work">
       <div class="slider-container">
@@ -92,16 +151,15 @@
       Your browser does not support the video tag.
     </video>
   </div>
-
-  <div class="slide">
+    <div class="slide">
     <video controls preload="metadata" width="100%">
-      <source src="/images/Project16.mp4" type="video/mp4" />
+      <source src="/images/Project17.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>
-  <div class="slide">
+   <div class="slide">
     <video controls preload="metadata" width="100%">
-      <source src="/images/Project17.mp4" type="video/mp4" />
+      <source src="/images/Project18.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>
