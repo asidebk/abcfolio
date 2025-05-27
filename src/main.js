@@ -259,6 +259,12 @@ window.addEventListener("click", (event) => {
   const clickedObject = intersects[0].object;
   const name = clickedObject.name;
 
+  if (socialLinks[name]) {
+    // Open social link in new tab
+    window.open(socialLinks[name], "_blank");
+    return;
+  }
+
   const interactiveNames = [
     "Work_Raycaster", "Work_Raycaster_Hover",
     "About_Raycaster", "About_Raycaster_Hover",
@@ -292,6 +298,7 @@ window.addEventListener("click", (event) => {
       break;
   }
 });
+
 
 window.addEventListener("touchend", (event) => {
   // Map to pointer
