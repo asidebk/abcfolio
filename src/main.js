@@ -128,6 +128,38 @@ const hideModal = (modal) => {
     hideModal(modal);
   }
 });
+const contactForm = document.querySelector("#contact-form");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", function (e) {
+    e.preventDefault(); // 🚫 Prevent page reload
+
+    // Grab form values
+    const name = document.querySelector("#name").value;
+    const email = document.querySelector("#email").value;
+    const message = document.querySelector("#message").value;
+
+    // Send the data (example using fetch)
+    fetch("/send-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, message }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          alert("Message sent!");
+        } else {
+          alert("Failed to send message.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+      });
+  });
+}
+
 
 
   /* ---------------------------------
@@ -251,6 +283,8 @@ function prepareRaycasterMesh(object, name) {
       });
 
 window.addEventListener("click", (event) => {
+   if (event.target.tagName !== "CANVAS") return;
+
   raycaster.setFromCamera(pointer, camera);
   const intersects = raycaster.intersectObjects(raycasterObjects, true);
 
@@ -259,19 +293,15 @@ window.addEventListener("click", (event) => {
   const clickedObject = intersects[0].object;
   const name = clickedObject.name;
 
-  if (socialLinks[name]) {
-    // Open social link in new tab
-    window.open(socialLinks[name], "_blank");
-    return;
-  }
-
   const interactiveNames = [
-    "Work_Raycaster", "Work_Raycaster_Hover",
-    "About_Raycaster", "About_Raycaster_Hover",
-    "Contact_Raycaster", "Contact_Raycaster_Hover",
-    "Folder_Raycaster", "Folder_Raycaster_Hover",
-    "Imac_Raycaster", "Imac_Raycaster_Hover"
-  ];
+  "Work_Raycaster", "Work_Raycaster_Hover",
+  "About_Raycaster", "About_Raycaster_Hover",
+  "Contact_Raycaster", "Contact_Raycaster_Hover",
+  "Folder_Raycaster", "Folder_Raycaster_Hover",
+  "Imac_Raycaster", "Imac_Raycaster_Hover",
+  "Fb_Raycaster", "Fb_Raycaster_Hover",
+  "Insta_Raycaster", "Insta_Raycaster_Hover"
+];
 
   if (!interactiveNames.includes(name)) return;
 
@@ -298,7 +328,6 @@ window.addEventListener("click", (event) => {
       break;
   }
 });
-
 
 window.addEventListener("touchend", (event) => {
   // Map to pointer
