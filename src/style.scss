@@ -218,3 +218,14 @@ body {
     max-height: 85dvh;
   }
 }
+/* ========== Contact Text Link Colors ========== */
+.contact-text.phone a,
+.contact-text.gmail a {
+  color: red;
+  text-decoration: none;
+}
+
+.contact-text.phone a:hover,
+.contact-text.gmail a:hover {
+  color: darkred;
+}
