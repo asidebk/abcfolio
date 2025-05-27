@@ -94,6 +94,16 @@ controls.maxPolarAngle = Math.PI / 2;
     imac: document.querySelector(".modal.imac"),
   };
 const showModal = (modal) => {
+  if (modal === modals.contact) {
+    const contactForm = modal.querySelector("#contact-form");
+    if (contactForm && !contactForm.hasListener) {
+      contactForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        // your fetch logic here
+      });
+      contactForm.hasListener = true; // custom flag to avoid duplicate listeners
+    }
+  }
   gsap.killTweensOf(modal);
   modal.style.display = "flex";
   gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.5 });
@@ -102,6 +112,7 @@ const showModal = (modal) => {
   if (modal.classList.contains("work")) initWorkModalSlider();
   if (modal.classList.contains("imac")) initImacModalSlider();
 };
+
 
 const hideModal = (modal) => {
   gsap.killTweensOf(modal); // Clear previous tweens
@@ -128,19 +139,28 @@ const hideModal = (modal) => {
     hideModal(modal);
   }
 });
-const contactForm = document.querySelector("#contact-form");
 
+const contactForm = document.querySelector("#contact-form");
 if (contactForm) {
   contactForm.addEventListener("submit", function (e) {
     e.preventDefault(); // 🚫 Prevent page reload
 
-    // Grab form values
-    const name = document.querySelector("#name").value;
-    const email = document.querySelector("#email").value;
-    const message = document.querySelector("#message").value;
+   // Simple validation example
+    const name = contactForm.name.value.trim();
+    const email = contactForm.email.value.trim();
+    const message = contactForm.message.value.trim();
 
+     if (!name || !email || !message) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    alert("Thanks for your message, " + name + "!");
+
+    // Optionally reset form
+    contactForm.reset();
     // Send the data (example using fetch)
-    fetch("/send-email", {
+    fetch("http://localhost:3001/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
