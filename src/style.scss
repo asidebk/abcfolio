@@ -53,6 +53,33 @@
   z-index: 1001;
 }
 
+#instruction-panel {
+  position: fixed;
+  top: 50%;
+  left: 10px; /* distance from the left edge */
+  transform: translateY(-50%);
+  width: 300px; /* increased from 200px */
+  background-color: rgba(255, 255, 255, 0.9); /* slightly less transparent */
+  padding: 20px; /* increased padding */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4); /* slightly stronger shadow */
+  z-index: 1000; /* make sure it's above the canvas */
+  font-family: Arial, sans-serif;
+  font-size: 16px; /* larger text */
+}
+
+#instruction-panel img {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+#instruction-panel p {
+  font-size: 16px; /* larger text */
+  color: #333;
+}
+
+
 /* ========== Modal Variants ========== */
 .modal.work,
 .modal.imac, 
