@@ -18,11 +18,13 @@
   const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 1000);
   camera.position.set(-7, 5, 8);
   scene.add(camera);
-
+  
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
+
+  
 
   /* ---------------------------------
     Controls
@@ -32,6 +34,24 @@
   controls.target.set(0.0445, 1.992, 0.269);
 controls.minPolarAngle = 0;           // camera can't go below looking straight down
 controls.maxPolarAngle = Math.PI / 2;
+
+function adjustCameraForDevice() {
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    camera.position.set(-10, 6, 12);
+    controls.target.set(0, 1.8, 0);
+  } else {
+    camera.position.set(-7, 5, 8);
+    controls.target.set(0.0445, 1.992, 0.269);
+  }
+
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+
+adjustCameraForDevice();
+
   /* ---------------------------------
     Lights
   ----------------------------------*/
@@ -78,6 +98,8 @@ controls.maxPolarAngle = Math.PI / 2;
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
     camera.aspect = sizes.width / sizes.height;
+     adjustCameraForDevice(); // Re-adjust
+    renderer.setSize(sizes.width, sizes.height);
     camera.updateProjectionMatrix();
     renderer.setSize(sizes.width, sizes.height);
   });
