@@ -56,26 +56,38 @@
 #instruction-panel {
   position: fixed;
   top: 50%;
-  left: 10px; /* distance from the left edge */
-  transform: translateY(-50%);
-  width: 300px; /* increased from 200px */
-  background-color: rgba(255, 255, 255, 0.9); /* slightly less transparent */
-  padding: 20px; /* increased padding */
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.4); /* slightly stronger shadow */
-  z-index: 1000; /* make sure it's above the canvas */
-  font-family: Arial, sans-serif;
-  font-size: 16px; /* larger text */
+  left: 10px;
+  transform: translateY(50%);
+  width: 10cm;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  z-index: 1000;
 }
+
+/* Mobile styles to anchor at bottom and center horizontally */
+@media (max-width: 768px) {
+  #instruction-panel {
+    top: auto;           /* unset top */
+    bottom: 10px;        /* place panel 10px from bottom */
+    left: 50%;           /* position horizontally center */
+    right: auto;         /* unset right */
+    width: 90%;          /* wider width for smaller screens */
+    max-width: 200px;    /* max width to avoid too big */
+    transform: translateX(-50%);  /* center horizontally */
+    border-radius: 8px;  /* optional: rounded corners */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* optional shadow */
+  }
+}
+
 
 #instruction-panel img {
   width: 100%;
-  border-radius: 6px;
-  margin-bottom: 15px;
+  border-radius: 0px;
+  margin-bottom: 5px;
 }
 
 #instruction-panel p {
-  font-size: 16px; /* larger text */
+  font-size: 14px; /* larger text */
   color: #333;
 }
 
