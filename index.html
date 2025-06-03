@@ -70,23 +70,21 @@
   <div class="contact-wrapper" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; padding: 1.5rem;">
     
     <!-- Left: Contact Form -->
-    <form id="contact-form" class="form-horizontal" role="form" style="flex: 1; min-width: 280px; font-size: 1.25rem;">
-      <div class="form-group">
-        <input type="text" class="form-control" id="name" placeholder="NAME" name="name" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
-      </div>
+ <!-- Instead of form submission, use mailto link -->
+<!-- Instead of form submission, use mailto link -->
+<form>
+  <div style="flex: 1; min-width: 280px; font-size: 1.25rem;">
+    <input type="text" id="name" placeholder="NAME" style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
+    <input type="email" id="email" placeholder="EMAIL" style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
+    <textarea id="message" rows="5" placeholder="MESSAGE" style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;"></textarea>
 
-      <div class="form-group">
-        <input type="email" class="form-control" id="email" placeholder="EMAIL" name="email" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;">
-      </div>
+    <!-- Mailto Button -->
+    <button onclick="sendEmail()" style="padding: 0.5rem 1rem; font-size: 1.1rem;" type="button">
+      <i class="fa fa-paper-plane"></i> <span class="send-text"> SEND</span>
+    </button>
+  </div>
+</form>
 
-      <textarea class="form-control" rows="5" placeholder="MESSAGE" name="message" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.75rem;"></textarea>
-
-      <button class="btn btn-primary send-button" id="submit" type="submit" value="SEND" style="padding: 0.5rem 1rem; font-size: 1.1rem;">
-        <div class="alt-send-button">
-          <i class="fa fa-paper-plane"></i><span class="send-text"> SEND</span>
-        </div>
-      </button>
-    </form>
 
     <!-- Right: Direct Contact Info -->
     <div class="direct-contact-container" style="flex: 1; min-width: 280px; font-size: 1.25rem;">
@@ -293,6 +291,18 @@
   </div>
 </div>
 
+<script>
+  function sendEmail() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    const subject = encodeURIComponent(`Message from ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+
+    window.location.href = `mailto:abc.designsnyc@gmail.com?subject=${subject}&body=${body}`;
+  }
+</script>
 
    
   
