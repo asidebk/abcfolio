@@ -5,6 +5,7 @@
   import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
   import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
   import gsap from "gsap";
+  
 
   /* ---------------------------------
     Setup: Canvas, Sizes, Clock
@@ -164,7 +165,8 @@ const hideModal = (modal) => {
 
 const contactForm = document.querySelector("#contact-form");
 if (contactForm) {
-  contactForm.addEventListener("submit", function (e) {
+  
+contactForm.addEventListener("submit", function (e) {
     e.preventDefault(); // 🚫 Prevent page reload
 
    // Simple validation example
@@ -343,7 +345,7 @@ window.addEventListener("click", (event) => {
   "Folder_Raycaster", "Folder_Raycaster_Hover",
   "Imac_Raycaster", "Imac_Raycaster_Hover",
   "Fb_Raycaster", "Fb_Raycaster_Hover",
-  "Insta_Raycaster", "Insta_Raycaster_Hover"
+  "Insta_Raycaster", "Insta_Raycaster_Hover",  "Logo_Raycaster", "Logo_Raycaster_Hover"
 ];
 
   if (!interactiveNames.includes(name)) return;
@@ -435,7 +437,7 @@ window.addEventListener("touchend", (event) => {
         "Insta_Raycaster", "Fb_Raycaster", "Folder_Raycaster", "Imac_Raycaster", "Mouse_Raycaster",
         "Work_Raycaster", "About_Raycaster", "Contact_Raycaster",
         "Work_Raycaster_Hover", "About_Raycaster_Hover", "Contact_Raycaster_Hover",
-        "Folder_Raycaster_Hover", "Fb_Raycaster_Hover", "Insta_Raycaster_Hover", "Imac_Raycaster_Hover"
+        "Folder_Raycaster_Hover", "Fb_Raycaster_Hover", "Insta_Raycaster_Hover", "Imac_Raycaster_Hover", "Logo_Raycaster", "Logo_Raycaster_Hover" 
       ];
       targets.forEach(name => prepareRaycasterMesh(gltf.scene.getObjectByName(name), name));
 
