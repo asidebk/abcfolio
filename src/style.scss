@@ -246,6 +246,30 @@ body {
     font-size: 0.9rem;
   }
 }
+@media (max-width: 768px) {
+  .modal.folder {
+    padding: 1rem;
+    overflow-y: auto;
+  }
+}
+@media (max-width: 768px) {
+  .modal.about {
+    padding: 1rem;
+    overflow-y: auto;
+  }
+}
+@media (max-width: 768px) {
+  .modal.folder .slide iframe,
+  .modal.folder .slide embed,
+  .modal.folder .slide object {
+    width: 100%;
+    height: 80vh;
+    max-width: 100%;
+    border: none;
+  }
+}
+
+
 
 /* Landscape mode handling */
 @media screen and (orientation: landscape) and (max-height: 500px) {
